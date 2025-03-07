@@ -127,6 +127,12 @@ return [
             'path' => storage_path('logs/laravel.log'),
         ],
 
+        'import_errors' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/import_errors.log'),
+            'level' => 'error',
+        ],
+
     ],
 
 ];
