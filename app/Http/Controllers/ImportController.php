@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ImportRequest;
 use App\FileReaders\Contracts\FileReaderContract;
+use App\Http\Requests\ImportRequest;
 use App\Imports\AbstractImportService;
 use Illuminate\Http\JsonResponse;
 

@@ -10,6 +10,6 @@ class Row extends Model
 
     protected $fillable = [
         'name',
-        'date'
+        'date',
     ];
 }
