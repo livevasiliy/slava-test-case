@@ -22,9 +22,7 @@ abstract class AbstractImportService implements ImportServiceContract
         protected BatchSizeConfigurationContract $batchSizeConfig,
         protected ?QueueConfigurationContract $queueConfig = null,
         protected ?HeaderRowConfigurationContract $headerConfig = null
-    )
-    {
-    }
+    ) {}
 
     public function import(string $filePath): void
     {
@@ -63,7 +61,7 @@ abstract class AbstractImportService implements ImportServiceContract
         if ($validationResult['valid']) {
             $this->processRow($row);
         } else {
-            $errorMessage = ($index + 1) . ' - ' . implode(', ', $validationResult['errors']);
+            $errorMessage = ($index + 1).' - '.implode(', ', $validationResult['errors']);
             $this->logger->error($errorMessage);
         }
     }

@@ -61,8 +61,9 @@ class ImportLogger implements LoggerInterface
     {
         $replace = [];
         foreach ($context as $key => $val) {
-            $replace['{' . $key . '}'] = $val;
+            $replace['{'.$key.'}'] = $val;
         }
+
         return strtr($message, $replace);
     }
 }

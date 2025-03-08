@@ -9,7 +9,6 @@ use Illuminate\Support\Carbon;
 
 class RowImportService extends AbstractImportService
 {
-
     protected function processRow(array $row): void
     {
         // Создаем запись в БД

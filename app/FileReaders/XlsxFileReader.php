@@ -9,18 +9,18 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class XlsxFileReader extends FileReader
 {
-
     /**
      * @throws FilePathIsNotSetException
      */
     public function read(): array
     {
         if (is_null($this->getFilePath())) {
-            throw new FilePathIsNotSetException();
+            throw new FilePathIsNotSetException;
         }
 
         $spreadsheet = IOFactory::load($this->getFilePath());
         $sheet = $spreadsheet->getActiveSheet();
+
         return $sheet->toArray();
     }
 }

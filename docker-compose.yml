@@ -1,0 +1,59 @@
+services:
+    # PostgreSQL
+    database:
+        image: postgres:15-alpine
+        container_name: postgres
+        environment:
+            POSTGRES_USER: ${DB_USERNAME}
+            POSTGRES_PASSWORD: ${DB_PASSWORD}
+            POSTGRES_DB: ${DB_DATABASE}
+        ports:
+            - "5432:5432"
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        networks:
+            - app_network
+
+    # Redis
+    redis:
+        image: redis:7-alpine
+        container_name: redis
+        ports:
+            - "6379:6379"
+        networks:
+            - app_network
+
+    # PHP 8.3 с Composer
+    php:
+        build:
+            context: .
+            dockerfile: docker/php-fpm/Dockerfile
+        container_name: php
+        volumes:
+            - ./:/var/www/html
+        depends_on:
+            - database
+            - redis
+        networks:
+            - app_network
+
+    # Nginx
+    nginx:
+        image: nginx:alpine
+        container_name: nginx
+        ports:
+            - "8080:80"
+        volumes:
+            - ./:/var/www/html
+            - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+        depends_on:
+            - php
+        networks:
+            - app_network
+
+volumes:
+    postgres_data:
+
+networks:
+    app_network:
+        driver: bridge

@@ -13,7 +13,6 @@ use App\Imports\Contracts\HeaderRowConfigurationContract;
 use App\Imports\Contracts\QueueConfigurationContract;
 use App\Imports\RowImportService;
 use App\Logger\ImportLogger;
-use App\Imports\Contracts\ImportServiceContract;
 use App\Validators\Contracts\RowValidatorContract;
 use App\Validators\ExcelRowValidator;
 use Illuminate\Support\ServiceProvider;
@@ -28,29 +27,29 @@ class RowImportServiceProvider extends ServiceProvider
     {
         // Регистрация FileReader
         $this->app->bind(FileReaderContract::class, function ($app) {
-            return new XlsxFileReader();
+            return new XlsxFileReader;
         });
 
         // Регистрация Validator
         $this->app->singleton(RowValidatorContract::class, function ($app) {
-            return new ExcelRowValidator();
+            return new ExcelRowValidator;
         });
 
         // Регистрация Logger
         $this->app->singleton(LoggerInterface::class, function ($app) {
-            return new ImportLogger();
+            return new ImportLogger;
         });
 
         $this->app->singleton(BatchSizeConfigurationContract::class, function ($app) {
-            return new RowImportConfiguration();
+            return new RowImportConfiguration;
         });
 
         $this->app->singleton(QueueConfigurationContract::class, function ($app) {
-            return new RowImportConfiguration();
+            return new RowImportConfiguration;
         });
 
         $this->app->singleton(HeaderRowConfigurationContract::class, function ($app) {
-            return new RowImportConfiguration();
+            return new RowImportConfiguration;
         });
 
         // Регистрация RowImportService
