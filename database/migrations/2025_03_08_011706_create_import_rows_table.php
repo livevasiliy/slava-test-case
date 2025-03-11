@@ -11,10 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('rows', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->date('date');
+        Schema::create('import_rows', function (Blueprint $table) {
+            $table->bigInteger('id')->primary();
+            $table->string('name')->nullable(false);
+            $table->date('date')->nullable(false);
+            $table->foreignId('file_id')
+                ->constrained('import_files')
+                ->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -24,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('rows');
+        Schema::dropIfExists('import_rows');
     }
 };

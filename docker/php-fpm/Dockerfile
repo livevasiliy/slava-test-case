@@ -14,7 +14,7 @@ RUN apk add --no-cache \
 
 # Установка PHP расширений через install-php-extensions
 ADD --chmod=0755 https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
-RUN install-php-extensions opcache pdo_pgsql pgsql psr sockets zip gd
+RUN install-php-extensions opcache pdo_pgsql pgsql psr sockets zip gd redis pcntl
 
 # Установка Composer глобально
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer

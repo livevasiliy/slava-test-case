@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Validators;
 
 use App\Validators\Contracts\RowValidatorContract;
+use Illuminate\Support\Facades\Validator;
 
 abstract class RowValidator implements RowValidatorContract
 {
@@ -18,18 +19,18 @@ abstract class RowValidator implements RowValidatorContract
      */
     public function validate(array $row): array
     {
-        $rules = $this->getRules();
-        $errors = [];
+        $validator = Validator::make($row, $this->getRules(), $this->getMessages());
 
-        foreach ($rules as $field => $rule) {
-            if (! isset($row[$field]) || ! $this->validateField($row[$field], $rule)) {
-                $errors[] = "Field '{$field}' is invalid";
-            }
+        if ($validator->fails()) {
+            return [
+                'valid' => false,
+                'errors' => $validator->errors()->all(), // Все ошибки в виде массива
+            ];
         }
 
         return [
-            'valid' => empty($errors),
-            'errors' => $errors,
+            'valid' => true,
+            'errors' => [],
         ];
     }
 
@@ -50,5 +51,10 @@ abstract class RowValidator implements RowValidatorContract
         }
 
         return false;
+    }
+
+    protected function getMessages(): array
+    {
+        return [];
     }
 }

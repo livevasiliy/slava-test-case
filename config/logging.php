@@ -130,7 +130,7 @@ return [
         'import_errors' => [
             'driver' => 'single',
             'path' => storage_path('logs/import_errors.log'),
-            'level' => 'error',
+            'level' => 'debug',
         ],
 
     ],

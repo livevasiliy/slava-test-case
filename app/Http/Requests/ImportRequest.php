@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
@@ -7,7 +9,7 @@ use Illuminate\Foundation\Http\FormRequest;
 class ImportRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * Determine if the usxer is authorized to make this request.
      */
     public function authorize(): bool
     {
@@ -22,7 +24,7 @@ class ImportRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'file' => ['required', 'file', 'mimes:xlsx,xls'],
+            'file' => ['required', 'file'],
         ];
     }
 }
