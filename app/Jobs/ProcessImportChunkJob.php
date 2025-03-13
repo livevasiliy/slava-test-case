@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Jobs;
 
+use App\DTO\ImportRowDTO;
 use App\Imports\AbstractImportService;
 use App\Models\ImportFile;
 use Illuminate\Bus\Batchable;
@@ -12,12 +13,14 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 
 class ProcessImportChunkJob implements ShouldQueue
 {
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    /**
+     * @var ImportRowDTO[] $chunk
+     */
     public array $chunk;
 
     public ImportFile $importFile;

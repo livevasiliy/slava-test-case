@@ -16,6 +16,7 @@ use App\Models\ValidationError;
 use App\Validators\RowValidator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Redis;
 
 abstract class AbstractImportService implements ImportServiceContract
 {
@@ -29,14 +30,11 @@ abstract class AbstractImportService implements ImportServiceContract
 
     public function import(string $filePath): void
     {
-        // 1. Сохраняем файл на диск
         $storedFilePath = $this->storeFileOnDisk($filePath);
 
-        // 2. Читаем строки из файла
         $this->fileReader->setFilePath($filePath);
         $rows = $this->fileReader->read();
 
-        // 5. Удаляем строку заголовка, если она есть
         if ($this->headerConfig && $this->headerConfig->getHeaderRowNumber() >= 0) {
             $headerRowNumber = $this->headerConfig->getHeaderRowNumber();
             unset($rows[$headerRowNumber]);
@@ -44,22 +42,29 @@ abstract class AbstractImportService implements ImportServiceContract
 
         $countRows = count($rows);
 
-        // 3. Создаем запись в таблице import_files
         $importedFile = $this->createImportedFileRecord($filePath, $storedFilePath, $countRows);
 
-        // 6. Разбиваем строки на пакеты
+        $this->initializeProgress($importedFile->id);
+
         $batchSize = $this->batchSizeConfig->getBatchSize();
         $chunks = array_chunk($rows, $batchSize);
 
         foreach ($chunks as $chunk) {
+            /** @var ImportRowDTO[] $mappedChunk */
+            $mappedChunk = array_map(fn(array $row) => $this->mapRowToObject($row), $chunk);
             if ($this->queueConfig && $this->queueConfig->shouldUseQueue()) {
-                dispatch(new ProcessImportChunkJob($chunk, $importedFile));
+                dispatch(new ProcessImportChunkJob($mappedChunk, $importedFile));
             } else {
-                $this->processChunk($chunk, $importedFile);
+                $this->processChunk($mappedChunk, $importedFile);
             }
         }
     }
 
+    /**
+     * @param ImportRowDTO[] $chunk
+     * @param ImportFile $importFile
+     * @return void
+     */
     protected function processChunk(array $chunk, ImportFile $importFile): void
     {
         foreach ($chunk as $index => $row) {
@@ -67,18 +72,28 @@ abstract class AbstractImportService implements ImportServiceContract
         }
     }
 
-    public function processRowWithValidation(array $row, int $index, int $fileId): void
+    private function mapRowToObject(array $row): ImportRowDTO
     {
-        $data = (new ImportRowDTO(
+        return new ImportRowDTO(
             (int) $row[0],
             (string) $row[1],
             (string) $row[2],
-        ))->jsonSerialize();
+        );
+    }
 
-        $validationResult = $this->validator->validate($data);
+    public function processRowWithValidation(ImportRowDTO $data, int $index, int $fileId): void
+    {
+        $validationResult = $this->validator->validate($data->jsonSerialize());
+
+        // Получаем уникальный ключ для прогресса
+        $progressKey = "import_progress:{$fileId}";
 
         if ($validationResult['valid']) {
-            $this->processRow($data, $fileId);
+            $this->processRow($data->jsonSerialize(), $fileId);
+
+            // Увеличиваем количество обработанных строк в Redis
+            $processedRows = (int) Redis::get($progressKey) + 1;
+            Redis::set($progressKey, $processedRows);
         } else {
             $lineNumber = $index + 1;
             foreach ($validationResult['errors'] as $error) {
@@ -96,13 +111,12 @@ abstract class AbstractImportService implements ImportServiceContract
     protected function storeFileOnDisk(string $filePath): string
     {
         $fileName = pathinfo($filePath, PATHINFO_FILENAME);
-        $disk = 'local'; // Используем диск по умолчанию (можно изменить на 's3' или другой)
-        Storage::disk($disk)->put(
-            'imports/'.$fileName.pathinfo($filePath, PATHINFO_EXTENSION),
+        Storage::disk('imports')->put(
+            $fileName . '.' . pathinfo($filePath, PATHINFO_EXTENSION),
             file_get_contents($filePath)
         );
 
-        return Storage::disk($disk)->path($fileName);
+        return Storage::disk('imports')->path($fileName . '.' . pathinfo($filePath, PATHINFO_EXTENSION));
     }
 
     protected function createImportedFileRecord(
@@ -115,11 +129,18 @@ abstract class AbstractImportService implements ImportServiceContract
         return ImportFile::create([
             'file_name' => basename($originalFilePath),
             'file_path' => $storedFilePath,
-            'file_content' => base64_encode($fileContent), // Кодируем содержимое в Base64
-            'total_rows' => $countRows, // Пока неизвестно количество строк
+            'file_content' => base64_encode($fileContent),
+            'total_rows' => $countRows,
             'processed_rows' => 0,
             'status' => 'pending',
         ]);
+    }
+
+    protected function initializeProgress(int $fileId): void
+    {
+        $progressKey = "import_progress:{$fileId}";
+        Redis::set($progressKey, 0); // Начальное значение: 0 обработанных строк
+        Redis::expire($progressKey, 86400); // Устанавливаем TTL (например, 24 часа)
     }
 
     abstract protected function processRow(array $row, int $fileId): void;
