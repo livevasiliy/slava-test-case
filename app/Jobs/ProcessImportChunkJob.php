@@ -6,7 +6,6 @@ namespace App\Jobs;
 
 use App\DTO\ImportRowDTO;
 use App\Imports\AbstractImportService;
-use App\Models\ImportFile;
 use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -23,15 +22,17 @@ class ProcessImportChunkJob implements ShouldQueue
      */
     public array $chunk;
 
-    public ImportFile $importFile;
+    public int $importFileId;
+    public int $totalRows;
 
     /**
      * Create a new job instance.
      */
-    public function __construct(array $chunk, ImportFile $importFile)
+    public function __construct(int $importFileId, array $chunk, int $totalRows)
     {
         $this->chunk = $chunk;
-        $this->importFile = $importFile;
+        $this->importFileId = $importFileId;
+        $this->totalRows = $totalRows;
     }
 
     /**
@@ -40,7 +41,7 @@ class ProcessImportChunkJob implements ShouldQueue
     public function handle(AbstractImportService $service): void
     {
         foreach ($this->chunk as $index => $row) {
-            $service->processRowWithValidation($row, $index, $this->importFile->id);
+            $service->processRowWithValidation($service->mapRowToObject($row), $index, $this->importFileId);
         }
     }
 }
