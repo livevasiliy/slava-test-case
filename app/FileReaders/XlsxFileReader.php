@@ -5,7 +5,11 @@ declare(strict_types=1);
 namespace App\FileReaders;
 
 use App\Exceptions\FilePathIsNotSetException;
+use Cache\Adapter\Redis\RedisCachePool;
+use Cache\Bridge\SimpleCache\SimpleCacheBridge;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Settings;
+use Redis;
 
 class XlsxFileReader extends FileReader
 {
@@ -18,12 +22,15 @@ class XlsxFileReader extends FileReader
             throw new FilePathIsNotSetException;
         }
 
-        $client = new \Redis();
-        $client->connect('127.0.0.1', 6379);
-        $pool = new \Cache\Adapter\Redis\RedisCachePool($client);
-        $simpleCache = new \Cache\Bridge\SimpleCache\SimpleCacheBridge($pool);
+        $client = new Redis();
+        $client->connect(
+            config('database.redis.default.host'),
+            config('database.redis.default.port')
+        );
+        $pool = new RedisCachePool($client);
+        $simpleCache = new SimpleCacheBridge($pool);
 
-        \PhpOffice\PhpSpreadsheet\Settings::setCache($simpleCache);
+        Settings::setCache($simpleCache);
 
         $spreadsheet = IOFactory::load($this->getFilePath());
         $sheet = $spreadsheet->getActiveSheet();
