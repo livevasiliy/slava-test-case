@@ -15,15 +15,10 @@ class RowCreatedEvent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public ImportRow $row;
-
     /**
      * Create a new event instance.
      */
-    public function __construct(ImportRow $row)
-    {
-        $this->row = $row;
-    }
+    public function __construct(public array $rows) {}
 
     /**
      * Get the channels the event should broadcast on.

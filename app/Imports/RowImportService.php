@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace App\Imports;
 
+use App\Events\RowCreatedEvent;
+use App\Jobs\CallRowCreatedEventJob;
 use App\Models\ImportFile;
 use App\Models\ImportRow;
+use Exception;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Redis;
 
@@ -26,9 +29,15 @@ class RowImportService extends AbstractImportService
         }
 
         // Массовая вставка
-        ImportRow::insert($insertData);
-        $importFile = ImportFile::find($fileId);
-        $importFile->increment('processed_rows', count($insertData));
-        Redis::set($importFile->getRedisKey(), count($insertData));
+        try {
+            ImportRow::insert($insertData);
+            $importFile = ImportFile::find($fileId);
+            $importFile->increment('processed_rows', count($insertData));
+            Redis::set($importFile->getRedisKey(), count($insertData));
+            event(new RowCreatedEvent($insertData));
+        } catch (Exception $exception) {
+            throw new $exception;
+        }
+
     }
 }

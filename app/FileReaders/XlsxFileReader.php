@@ -25,7 +25,7 @@ class XlsxFileReader extends FileReader
         $client = new Redis();
         $client->connect(
             config('database.redis.default.host'),
-            config('database.redis.default.port')
+            (int)config('database.redis.default.port')
         );
         $pool = new RedisCachePool($client);
         $simpleCache = new SimpleCacheBridge($pool);
