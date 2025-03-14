@@ -28,6 +28,7 @@ class XlsxFileReader extends FileReader
         $spreadsheet = IOFactory::load($this->getFilePath());
         $sheet = $spreadsheet->getActiveSheet();
 
+
         return $sheet->toArray();
     }
 }

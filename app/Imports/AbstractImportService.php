@@ -13,6 +13,7 @@ use App\Imports\Contracts\QueueConfigurationContract;
 use App\Jobs\ProcessImportChunkJob;
 use App\Models\ImportFile;
 use App\Models\ValidationError;
+use App\Validators\Contracts\RowValidatorContract;
 use App\Validators\RowValidator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -25,7 +26,7 @@ abstract class AbstractImportService implements ImportServiceContract
 {
     public function __construct(
         protected FileReader $fileReader,
-        protected RowValidator $validator,
+        protected RowValidatorContract $validator,
         protected BatchSizeConfigurationContract $batchSizeConfig,
         protected ?QueueConfigurationContract $queueConfig = null,
         protected ?HeaderRowConfigurationContract $headerConfig = null
@@ -54,12 +55,12 @@ abstract class AbstractImportService implements ImportServiceContract
         }
     }
 
-    public function processRowWithValidation(ImportRowDTO $data, int $index, int $fileId): void
+    public function processRowWithValidation(ImportRowDTO $data, int $index, int $fileId): ?ImportRowDTO
     {
         $validationResult = $this->validator->validate($data->jsonSerialize());
 
         if ($validationResult['valid']) {
-            $this->processRow($data->jsonSerialize(), $fileId);
+            return $data;
         } else {
             $lineNumber = $index + 1;
             foreach ($validationResult['errors'] as $error) {
@@ -72,6 +73,7 @@ abstract class AbstractImportService implements ImportServiceContract
             }
             $errorMessage = ($lineNumber).' - '.implode(', ', $validationResult['errors']);
             Log::channel('import_errors')->error($errorMessage);
+            return null;
         }
     }
 
@@ -90,26 +92,18 @@ abstract class AbstractImportService implements ImportServiceContract
 
         Bus::batch($jobs)
             ->before(function (Batch $batch) use($fileId) {
-                Log::channel('import_errors')->info('Start import', [
-                    'batch' => $batch,
-                ]);
+                Log::channel('import_errors')->info('Start import');
                 $redisKey = "import_progress:$fileId";
                 Redis::set($redisKey, 0);
                 Log::channel('import_errors')->info('setup value in redis for ' . $redisKey . '= ' . Redis::get($redisKey));
             })
             ->progress(function (Batch $batch) use ($fileId) {
-                $redisKey = "import_progress:$fileId";
-                Redis::set($redisKey, $batch->progress());
-                Log::channel('import_errors')->info('Current progress: ' . $batch->progress(), [
-                    'batch' => $batch,
-                ]);
-                Log::channel('import_errors')->info('current value in redis for ' . $redisKey . '= ' . Redis::get($redisKey));
+                ImportFile::where('id', $fileId)->update(['status' => 'processing']);
+                Log::channel('import_errors')->info('Current progress: ' . $batch->progress());
             })
             ->then(function (Batch $batch) use ($fileId) {
                 ImportFile::where('id', $fileId)->update(['status' => 'completed']);
-                Log::channel('import_errors')->info('Import finished', [
-                    'batch' => $batch,
-                ]);
+                Log::channel('import_errors')->info('Import finished');
             })
             ->catch(function (Batch $batch, Throwable $e) use ($fileId) {
                 ImportFile::where('id', '=', $fileId)->update(['status' => 'failed']);
@@ -146,5 +140,5 @@ abstract class AbstractImportService implements ImportServiceContract
         ]);
     }
 
-    abstract protected function processRow(array $row, int $fileId): void;
+    abstract public function processRows(array $rows, int $fileId): void;
 }

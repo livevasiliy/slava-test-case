@@ -24,6 +24,11 @@ class ImportFile extends Model
         'process_with_error',
     ];
 
+    public function getRedisKey(): string
+    {
+        return 'import_file:' . $this->id;
+    }
+
     public function rows(): HasMany
     {
         return $this->hasMany(ImportRow::class, 'file_id');

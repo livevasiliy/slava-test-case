@@ -17,7 +17,7 @@ class RowImportConfiguration implements BatchSizeConfigurationContract, HeaderRo
 
     public function getBatchSize(): int
     {
-        return 2;
+        return 1000;
     }
 
     public function shouldUseQueue(): bool

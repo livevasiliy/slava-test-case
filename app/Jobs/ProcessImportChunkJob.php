@@ -40,8 +40,16 @@ class ProcessImportChunkJob implements ShouldQueue
      */
     public function handle(AbstractImportService $service): void
     {
+        $validRows = [];
         foreach ($this->chunk as $index => $row) {
-            $service->processRowWithValidation($service->mapRowToObject($row), $index, $this->importFileId);
+            $result = $service->processRowWithValidation(
+                $service->mapRowToObject($row), $index, $this->importFileId
+            );
+
+            if (!is_null($result)) {
+                $validRows[] = $result->jsonSerialize();
+            }
         }
+        $service->processRows($validRows, $this->importFileId);
     }
 }

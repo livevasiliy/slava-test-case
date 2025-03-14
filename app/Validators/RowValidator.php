@@ -34,25 +34,6 @@ abstract class RowValidator implements RowValidatorContract
         ];
     }
 
-    /**
-     * Проверяет поле на соответствие правилу.
-     *
-     * @param  mixed  $value
-     * @param  callable|string  $rule
-     */
-    protected function validateField($value, $rule): bool
-    {
-        if (is_callable($rule)) {
-            return $rule($value);
-        }
-
-        if (is_string($rule) && function_exists($rule)) {
-            return $rule($value);
-        }
-
-        return false;
-    }
-
     protected function getMessages(): array
     {
         return [];

@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Imports\AbstractImportService;
+use App\Jobs\ImportFileJob;
 use App\Jobs\ProcessImportChunkJob;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
@@ -20,6 +21,10 @@ class AppServiceProvider extends ServiceProvider
         }
 
         $this->app->bindMethod([ProcessImportChunkJob::class, 'handle'], function (ProcessImportChunkJob $job, Application $app) {
+            $job->handle($this->app->make(AbstractImportService::class));
+        });
+
+        $this->app->bindMethod([ImportFileJob::class, 'handle'], function (ImportFileJob $job, Application $app) {
             $job->handle($this->app->make(AbstractImportService::class));
         });
     }

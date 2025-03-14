@@ -7,18 +7,28 @@ namespace App\Imports;
 use App\Models\ImportFile;
 use App\Models\ImportRow;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Redis;
 
 class RowImportService extends AbstractImportService
 {
-    protected function processRow(array $row, int $fileId): void
+    public function processRows(array $rows, int $fileId): void
     {
-        // Создаем запись в БД
-        ImportRow::create([
-            'id' => $row['id'],
-            'name' => $row['name'],
-            'date' => Carbon::createFromFormat('d.m.Y', $row['date'])->format('Y-m-d'),
-            'file_id' => $fileId,
-        ]);
-        ImportFile::find($fileId)->increment('processed_rows');
+        $insertData = [];
+
+        foreach ($rows as $row) {
+            $insertData[] = [
+                'id' => $row['id'],
+                'name' => $row['name'],
+                'date' => Carbon::createFromFormat('d.m.Y', $row['date'])->format('Y-m-d'),
+                'file_id' => $fileId,
+                'created_at' => Carbon::now(),
+            ];
+        }
+
+        // Массовая вставка
+        ImportRow::insert($insertData);
+        $importFile = ImportFile::find($fileId);
+        $importFile->increment('processed_rows', count($insertData));
+        Redis::set($importFile->getRedisKey(), count($insertData));
     }
 }
