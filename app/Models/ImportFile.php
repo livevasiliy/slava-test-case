@@ -6,7 +6,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\Redis;
 
 class ImportFile extends Model
 {
@@ -26,7 +25,7 @@ class ImportFile extends Model
 
     public function getRedisKey(): string
     {
-        return 'import_file:' . $this->id;
+        return 'import_file:'.$this->id;
     }
 
     public function rows(): HasMany

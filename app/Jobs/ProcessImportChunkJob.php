@@ -18,11 +18,12 @@ class ProcessImportChunkJob implements ShouldQueue
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     /**
-     * @var ImportRowDTO[] $chunk
+     * @var ImportRowDTO[]
      */
     public array $chunk;
 
     public int $importFileId;
+
     public int $totalRows;
 
     /**
@@ -46,7 +47,7 @@ class ProcessImportChunkJob implements ShouldQueue
                 $service->mapRowToObject($row), $index, $this->importFileId
             );
 
-            if (!is_null($result)) {
+            if (! is_null($result)) {
                 $validRows[] = $result->jsonSerialize();
             }
         }

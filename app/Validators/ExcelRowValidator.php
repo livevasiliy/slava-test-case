@@ -27,19 +27,19 @@ class ExcelRowValidator extends RowValidator
         $errors = [];
 
         // Валидация ID
-        if (empty($row['id']) || !is_int($row['id']) || $row['id'] <= 0) {
+        if (empty($row['id']) || ! is_int($row['id']) || $row['id'] <= 0) {
             $errors[] = 'ID обязателен и должен быть больше 0.';
         }
 
         // Валидация имени
-        if (empty($row['name']) || !is_string($row['name']) || strlen($row['name']) > 255) {
+        if (empty($row['name']) || ! is_string($row['name']) || strlen($row['name']) > 255) {
             $errors[] = 'Имя обязательно и не должно превышать 255 символов.';
         }
 
         // Валидация даты
         $dateFormat = 'd.m.Y';
         $d = DateTime::createFromFormat($dateFormat, $row['date']);
-        if (!$d || $d->format($dateFormat) !== $row['date']) {
+        if (! $d || $d->format($dateFormat) !== $row['date']) {
             $errors[] = 'Дата обязательна и должна быть в формате дд.мм.гггг.';
         }
 

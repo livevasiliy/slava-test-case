@@ -22,10 +22,10 @@ class XlsxFileReader extends FileReader
             throw new FilePathIsNotSetException;
         }
 
-        $client = new Redis();
+        $client = new Redis;
         $client->connect(
             config('database.redis.default.host'),
-            (int)config('database.redis.default.port')
+            (int) config('database.redis.default.port')
         );
         $pool = new RedisCachePool($client);
         $simpleCache = new SimpleCacheBridge($pool);
@@ -34,7 +34,6 @@ class XlsxFileReader extends FileReader
 
         $spreadsheet = IOFactory::load($this->getFilePath());
         $sheet = $spreadsheet->getActiveSheet();
-
 
         return $sheet->toArray();
     }

@@ -14,12 +14,11 @@ use App\Jobs\ProcessImportChunkJob;
 use App\Models\ImportFile;
 use App\Models\ValidationError;
 use App\Validators\Contracts\RowValidatorContract;
-use App\Validators\RowValidator;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Redis;
 use Illuminate\Bus\Batch;
 use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Storage;
 use Throwable;
 
 abstract class AbstractImportService implements ImportServiceContract
@@ -73,6 +72,7 @@ abstract class AbstractImportService implements ImportServiceContract
             }
             $errorMessage = ($lineNumber).' - '.implode(', ', $validationResult['errors']);
             Log::channel('import_errors')->error($errorMessage);
+
             return null;
         }
     }
@@ -88,18 +88,18 @@ abstract class AbstractImportService implements ImportServiceContract
 
     public function processImport(int $fileId, array $chunks, int $totalRows): void
     {
-        $jobs = collect($chunks)->map(fn($chunk) => new ProcessImportChunkJob($fileId, $chunk, $totalRows))->toArray();
+        $jobs = collect($chunks)->map(fn ($chunk) => new ProcessImportChunkJob($fileId, $chunk, $totalRows))->toArray();
 
         Bus::batch($jobs)
-            ->before(function (Batch $batch) use($fileId) {
+            ->before(function (Batch $batch) use ($fileId) {
                 Log::channel('import_errors')->info('Start import');
                 $redisKey = "import_progress:$fileId";
                 Redis::set($redisKey, 0);
-                Log::channel('import_errors')->info('setup value in redis for ' . $redisKey . '= ' . Redis::get($redisKey));
+                Log::channel('import_errors')->info('setup value in redis for '.$redisKey.'= '.Redis::get($redisKey));
             })
             ->progress(function (Batch $batch) use ($fileId) {
                 ImportFile::where('id', $fileId)->update(['status' => 'processing']);
-                Log::channel('import_errors')->info('Current progress: ' . $batch->progress());
+                Log::channel('import_errors')->info('Current progress: '.$batch->progress());
             })
             ->then(function (Batch $batch) use ($fileId) {
                 ImportFile::where('id', $fileId)->update(['status' => 'completed']);
@@ -116,11 +116,11 @@ abstract class AbstractImportService implements ImportServiceContract
     {
         $fileName = pathinfo($filePath, PATHINFO_FILENAME);
         Storage::disk('imports')->put(
-            $fileName . '.' . pathinfo($filePath, PATHINFO_EXTENSION),
+            $fileName.'.'.pathinfo($filePath, PATHINFO_EXTENSION),
             file_get_contents($filePath)
         );
 
-        return Storage::disk('imports')->path($fileName . '.' . pathinfo($filePath, PATHINFO_EXTENSION));
+        return Storage::disk('imports')->path($fileName.'.'.pathinfo($filePath, PATHINFO_EXTENSION));
     }
 
     protected function createImportedFileRecord(

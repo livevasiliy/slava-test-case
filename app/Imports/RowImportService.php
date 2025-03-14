@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Imports;
 
 use App\Events\RowCreatedEvent;
-use App\Jobs\CallRowCreatedEventJob;
 use App\Models\ImportFile;
 use App\Models\ImportRow;
 use Exception;

@@ -37,5 +37,4 @@ class DataController
 
         return response()->json($paginatedData);
     }
-
 }
