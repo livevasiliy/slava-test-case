@@ -1,0 +1,83 @@
+[2025-03-14 23:19:35] local.INFO: Start import  
+[2025-03-14 23:19:35] local.INFO: setup value in redis for import_progress:102= 0  
+[2025-03-14 23:19:36] local.ERROR: 8 - ID обязателен и должен быть больше 0.  
+[2025-03-14 23:19:37] local.INFO: Current progress: 100  
+[2025-03-14 23:19:37] local.INFO: Import finished  
+[2025-03-14 23:47:55] local.INFO: Start import  
+[2025-03-14 23:47:55] local.INFO: setup value in redis for import_progress:1= 0  
+[2025-03-14 23:47:56] local.ERROR: 8 - ID обязателен и должен быть больше 0.  
+[2025-03-14 23:47:56] local.INFO: Current progress: 100  
+[2025-03-14 23:47:56] local.INFO: Import finished  
+[2025-03-14 23:54:55] local.INFO: Start import  
+[2025-03-14 23:54:55] local.INFO: setup value in redis for import_progress:4= 0  
+[2025-03-14 23:54:57] local.ERROR: 8 - ID обязателен и должен быть больше 0.  
+[2025-03-14 23:54:57] local.INFO: Current progress: 100  
+[2025-03-14 23:54:57] local.INFO: Import finished  
+[2025-03-15 00:45:47] local.INFO: Start import  
+[2025-03-15 00:45:48] local.INFO: setup value in redis for import_progress:6= 0  
+[2025-03-15 00:45:50] local.INFO: Current progress: 2  
+[2025-03-15 00:45:50] local.INFO: Current progress: 3  
+[2025-03-15 00:45:51] local.INFO: Current progress: 5  
+[2025-03-15 00:45:51] local.INFO: Current progress: 7  
+[2025-03-15 00:45:51] local.INFO: Current progress: 8  
+[2025-03-15 00:45:52] local.INFO: Current progress: 10  
+[2025-03-15 00:45:52] local.INFO: Current progress: 12  
+[2025-03-15 00:45:52] local.INFO: Current progress: 13  
+[2025-03-15 00:45:53] local.INFO: Current progress: 15  
+[2025-03-15 00:45:53] local.INFO: Current progress: 17  
+[2025-03-15 00:45:53] local.ERROR: 23 - Дата обязательна и должна быть в формате дд.мм.гггг.  
+[2025-03-15 00:45:53] local.INFO: Current progress: 18  
+[2025-03-15 00:45:53] local.INFO: Current progress: 20  
+[2025-03-15 00:45:54] local.INFO: Current progress: 22  
+[2025-03-15 00:45:54] local.INFO: Current progress: 23  
+[2025-03-15 00:45:54] local.INFO: Current progress: 25  
+[2025-03-15 00:45:55] local.INFO: Current progress: 27  
+[2025-03-15 00:45:55] local.INFO: Current progress: 28  
+[2025-03-15 00:45:55] local.INFO: Current progress: 30  
+[2025-03-15 00:45:55] local.INFO: Current progress: 32  
+[2025-03-15 00:45:56] local.INFO: Current progress: 33  
+[2025-03-15 00:45:56] local.INFO: Current progress: 35  
+[2025-03-15 00:45:56] local.INFO: Current progress: 37  
+[2025-03-15 00:45:57] local.INFO: Current progress: 38  
+[2025-03-15 00:45:57] local.ERROR: 635 - ID обязателен и должен быть больше 0.  
+[2025-03-15 00:45:57] local.INFO: Current progress: 40  
+[2025-03-15 00:45:57] local.INFO: Current progress: 42  
+[2025-03-15 00:45:58] local.INFO: Current progress: 43  
+[2025-03-15 00:45:58] local.INFO: Current progress: 45  
+[2025-03-15 00:45:58] local.INFO: Current progress: 47  
+[2025-03-15 00:45:59] local.INFO: Current progress: 48  
+[2025-03-15 00:45:59] local.INFO: Current progress: 50  
+[2025-03-15 00:45:59] local.INFO: Current progress: 52  
+[2025-03-15 00:46:00] local.INFO: Current progress: 53  
+[2025-03-15 00:46:00] local.INFO: Current progress: 55  
+[2025-03-15 00:46:01] local.INFO: Current progress: 57  
+[2025-03-15 00:46:01] local.INFO: Current progress: 58  
+[2025-03-15 00:46:01] local.INFO: Current progress: 60  
+[2025-03-15 00:46:02] local.INFO: Current progress: 62  
+[2025-03-15 00:46:02] local.INFO: Current progress: 63  
+[2025-03-15 00:46:02] local.INFO: Current progress: 65  
+[2025-03-15 00:46:02] local.ERROR: 108 - Дата обязательна и должна быть в формате дд.мм.гггг.  
+[2025-03-15 00:46:02] local.INFO: Current progress: 67  
+[2025-03-15 00:46:03] local.INFO: Current progress: 68  
+[2025-03-15 00:46:03] local.INFO: Current progress: 70  
+[2025-03-15 00:46:03] local.ERROR: Import error: Too few arguments to function Illuminate\Database\QueryException::__construct(), 0 passed in /Users/livevasiliy/Developer/slava-test-case/app/Imports/RowImportService.php on line 38 and exactly 4 expected  
+[2025-03-15 00:46:03] local.INFO: Current progress: 72  
+[2025-03-15 00:46:04] local.INFO: Current progress: 73  
+[2025-03-15 00:46:04] local.INFO: Current progress: 75  
+[2025-03-15 00:46:04] local.ERROR: 160 - Дата обязательна и должна быть в формате дд.мм.гггг.  
+[2025-03-15 00:46:04] local.INFO: Current progress: 77  
+[2025-03-15 00:46:05] local.INFO: Current progress: 78  
+[2025-03-15 00:46:05] local.INFO: Current progress: 80  
+[2025-03-15 00:46:05] local.ERROR: 316 - Дата обязательна и должна быть в формате дд.мм.гггг.  
+[2025-03-15 00:46:05] local.INFO: Current progress: 82  
+[2025-03-15 00:46:05] local.INFO: Current progress: 83  
+[2025-03-15 00:46:06] local.INFO: Current progress: 85  
+[2025-03-15 00:46:06] local.INFO: Current progress: 87  
+[2025-03-15 00:46:07] local.INFO: Current progress: 88  
+[2025-03-15 00:46:07] local.INFO: Current progress: 90  
+[2025-03-15 00:46:07] local.INFO: Current progress: 92  
+[2025-03-15 00:46:07] local.INFO: Current progress: 93  
+[2025-03-15 00:46:08] local.INFO: Current progress: 95  
+[2025-03-15 00:46:08] local.INFO: Current progress: 97  
+[2025-03-15 00:46:08] local.ERROR: 985 - Дата обязательна и должна быть в формате дд.мм.гггг.  
+[2025-03-15 00:46:08] local.INFO: Current progress: 98  
