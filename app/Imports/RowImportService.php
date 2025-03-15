@@ -17,6 +17,10 @@ class RowImportService extends AbstractImportService
     {
         $insertData = [];
 
+        if ($rows === []) {
+            return;
+        }
+
         foreach ($rows as $row) {
             $insertData[] = [
                 'id' => $row['id'],
@@ -29,13 +33,11 @@ class RowImportService extends AbstractImportService
 
         // Массовая вставка
         try {
-            if (count($insertData) > 0) {
                 ImportRow::insert($insertData);
                 $importFile = ImportFile::find($fileId);
                 $importFile->increment('processed_rows', count($insertData));
                 Redis::set($importFile->getRedisKey(), count($insertData));
                 event(new RowCreatedEvent($insertData));
-            }
         } catch (Exception $exception) {
             throw new $exception;
         }
