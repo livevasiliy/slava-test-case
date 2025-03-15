@@ -8,4 +8,4 @@ Route::get('/', function () {
 });
 
 Route::post('/import', ImportController::class)->name('import');
-Route::get('/import/data', \App\Http\Controllers\DataController::class);
+Route::get('/import/data', \App\Http\Controllers\DataController::class)->name('import.data');

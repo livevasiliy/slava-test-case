@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\DataResource;
 use App\Models\ImportRow;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -16,11 +17,12 @@ class DataController
      */
     public function __invoke(Request $request): JsonResponse
     {
-        $importedData = ImportRow::select('*') // Предполагается, что у вас есть поле 'item'
+        $importedData = ImportRow::select('*')
             ->get()
             ->groupBy('date');
 
         // Преобразуем сгруппированные данные в массив
+        /** @var Collection $formattedData */
         $formattedData = $importedData->map(function ($items, $date) {
             return [
                 'date' => $date,
@@ -31,9 +33,9 @@ class DataController
         // Реализуем пагинацию вручную
         $perPage = $request->input('per_page', 10);
         $currentPage = $request->input('page', 1);
-        $offset = ($currentPage - 1) * $perPage;
 
-        $paginatedData = $formattedData->slice($offset, $perPage)->values();
+        // Используем forPage для получения элементов для текущей страницы
+        $paginatedData = $formattedData->forPage($currentPage, $perPage)->all();
 
         return response()->json($paginatedData);
     }
